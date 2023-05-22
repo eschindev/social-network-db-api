@@ -1,0 +1,27 @@
+{
+  "name": "social-network-db-api",
+  "version": "1.0.0",
+  "description": "a backend DB setup for a simple social network",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eschindev/social-network-db-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eschindev/social-network-db-api/issues"
+  },
+  "homepage": "https://github.com/eschindev/social-network-db-api#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
