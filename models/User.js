@@ -3,17 +3,16 @@ const bcrypt = require("bcrypt");
 
 const userSchema = new Schema(
   {
-    name: {
+    username: {
       type: String,
       required: true,
+      trim: true,
     },
     email: {
       type: String,
       required: true,
-    },
-    password: {
-      type: String,
-      required: true,
+      trim: true,
+      validate: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
     },
     thoughts: [
       {
@@ -39,17 +38,6 @@ const userSchema = new Schema(
 userSchema.virtual("friendCount").get(function () {
   return this.friends.length;
 });
-
-userSchema.pre("save", async function (next) {
-  if (this.isNew || this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-  next();
-});
-
-userSchema.methods.checkPassword = async function (password) {
-  return bcrypt.compare(password, this.password);
-};
 
 const User = model("user", userSchema);
 

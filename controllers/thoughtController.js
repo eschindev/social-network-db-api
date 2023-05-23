@@ -20,7 +20,14 @@ module.exports = {
   // create a new thought
   createThought(req, res) {
     Thought.create(req.body)
-      .then((thought) => res.json(thought))
+      .then((thought) => {
+        const user = User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $push: { thoughts: thought._id } },
+          { new: true }
+        );
+        return res.json({ thought, user });
+      })
       .catch((err) => res.status(500).json(err));
   },
   // Delete a thought and remove them from the user
@@ -41,6 +48,34 @@ module.exports = {
               message: "Thought deleted, but no associated user found",
             })
           : res.json({ message: "Thought successfully deleted" })
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+  // add a reaction
+  addReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $push: { reactions: req.body } },
+      { runValidators: true, new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: "No thought with this id" })
+          : res.json(thought)
+      )
+      .catch((err) => res.status(500).json(err));
+  },
+  // delete a reaction
+  deleteReaction(req, res) {
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
+      { runValidators: true, new: true }
+    )
+      .then((thought) =>
+        !thought
+          ? res.status(404).json({ message: "No thought with this id" })
+          : res.json(thought)
       )
       .catch((err) => res.status(500).json(err));
   },
