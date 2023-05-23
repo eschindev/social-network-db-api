@@ -11,6 +11,7 @@ connection.once("open", async () => {
 
   await Thought.deleteMany({});
 
+  // creating users with no thoughts
   const users = [];
 
   for (let i = 0; i < 20; i++) {
@@ -18,14 +19,10 @@ connection.once("open", async () => {
     const email = `${username.split(" ")[0]}${Math.floor(
       Math.random() * 99
     )}@gmail.com`;
-    const password = `${username.split(" ")[0]}${Math.floor(
-      Math.random() * 99
-    )}`;
 
     users.push({
       username,
       email,
-      password,
     });
   }
 
@@ -33,6 +30,7 @@ connection.once("open", async () => {
 
   const usersFromDb = await User.find();
 
+  // creating thoughts with random username from existing users
   const thoughts = [];
 
   for (let i = 0; i < 20; i++) {
@@ -51,11 +49,19 @@ connection.once("open", async () => {
     thoughts.push({ thoughtText, username, reactions });
   }
 
-  await Thought.collection.insertMany(thoughts);
+  await Thought.create(thoughts);
 
   const thoughtsFromDb = await Thought.find();
-  const thoughtIds = thoughtsFromDb.map((thought) => thought._id);
 
+  // associating thoughts with users in db
+  for (thought of thoughtsFromDb) {
+    await User.findOneAndUpdate(
+      { username: thought.username },
+      { $push: { thoughts: thought._id } }
+    );
+  }
+
+  // randomly assigning friends to users
   const userIds = usersFromDb.map((user) => user._id);
 
   for (let i = 0; i < 20; i++) {
