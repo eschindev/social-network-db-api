@@ -21,8 +21,8 @@ module.exports = {
   createThought(req, res) {
     Thought.create(req.body)
       .then((thought) => {
-        const user = User.findOneAndUpdate(
-          { _id: req.body.userId },
+        User.findOneAndUpdate(
+          { username: thought.username },
           { $addToSet: { thoughts: thought._id } },
           { new: true }
         ).then((user) => res.json({ thought, user }));
@@ -65,7 +65,7 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
   // add a reaction
-  addReaction(req, res) {
+  createReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
       { $addToSet: { reactions: req.body } },
